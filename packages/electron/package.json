@@ -21,6 +21,7 @@
     "electron-replace-ffmpeg": "electron-replace-ffmpeg.js"
   },
   "dependencies": {
+    "@theia/core": "<1",
     "electron": "^4.2.11",
     "electron-download": "^4.1.1",
     "electron-store": "^2.0.0",
@@ -32,6 +33,12 @@
   },
   "scripts": {
     "postinstall": "node scripts/post-install.js",
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "theiaext clean",
+    "build": "theiaext build",
+    "watch": "theiaext watch",
     "test": "mocha \"tests/**/*.spec.js\""
-  }
+  },
+  "theiaExtensions": [
+  ]
 }

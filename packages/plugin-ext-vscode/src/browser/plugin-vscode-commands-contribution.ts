@@ -112,6 +112,7 @@ export class PluginVscodeCommandsContribution implements CommandContribution {
 
                 const leftURI = new TheiaURI(left);
                 const editorOptions = DocumentsMainImpl.toEditorOpenerOptions(this.shell, options);
+                console.log('left: ' + leftURI.toString() + ', right: ' + new TheiaURI(right).toString());
                 await this.diffService.openDiffEditor(leftURI, new TheiaURI(right), label, editorOptions);
             }
         });

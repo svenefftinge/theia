@@ -178,7 +178,7 @@ export class TerminalProcess extends Process {
     protected readonly terminal: IPty | undefined;
 
     readonly outputStream = this.createOutputStream();
-    readonly errorStream = new DevNullStream();
+    readonly errorStream = new DevNullStream({ autoDestroy: true });
     readonly inputStream: Writable;
 
     constructor(
@@ -210,7 +210,19 @@ export class TerminalProcess extends Process {
                 }
             });
 
-            this.terminal.on('exit', (code: number, signal?: number) => {
+            // `node-pty` actually emits a `close` event when the underlying socket gets closed:
+            const onClose = new Promise<void>(resolve => {
+                // tslint:disable-next-line: no-any
+                this.terminal!.on('close' as any, () => resolve());
+            }).then(() => {
+                this.ringBuffer.dispose();
+            });
+            const onExit = new Promise<{ code: number, signal?: number }>(resolve => {
+                this.terminal!.on('exit', (code, signal) => resolve({ code, signal }));
+            });
+
+            onExit.then(exitStatus => {
+                const { code, signal } = exitStatus;
                 // Make sure to only pass either code or signal as !undefined, not
                 // both.
                 //
@@ -226,6 +238,19 @@ export class TerminalProcess extends Process {
                 }
             });
 
+            /**
+             * Wait for all the streams to be closed, as well as for the process
+             * to exit.
+             */
+            Promise.all([onExit, onClose]).then(resolved => {
+                const { code, signal } = resolved[0];
+                if (signal === undefined || signal === 0) {
+                    this.emitOnClose(code, undefined);
+                } else {
+                    this.emitOnClose(undefined, signame(signal));
+                }
+            });
+
             this.terminal.on('data', (data: string) => {
                 ringBuffer.enq(data);
             });
@@ -237,7 +262,7 @@ export class TerminalProcess extends Process {
             });
 
         } catch (error) {
-            this.inputStream = new DevNullStream();
+            this.inputStream = new DevNullStream({ autoDestroy: true });
 
             // Normalize the error to make it as close as possible as what
             // node's child_process.spawn would generate in the same

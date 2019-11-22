@@ -73,7 +73,7 @@ export class CommandRegistryMainImpl implements CommandRegistryMain, Disposable 
 
     // tslint:disable-next-line:no-any
     $executeCommand<T>(id: string, ...args: any[]): PromiseLike<T | undefined> {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>> call $executeCommand from MainImpl');
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>> call $executeCommand from MainImpl with id: ' + id + ', args: ' + JSON.stringify(args));
         return this.delegate.executeCommand(id, ...args);
     }
 

@@ -118,8 +118,11 @@ export class CommandRegistryImpl implements CommandRegistryExt {
 
     // tslint:disable-next-line:no-any
     private async executeLocalCommand<T>(id: string, ...args: any[]): Promise<T | undefined> {
+        console.log('executeLocalCommand id: ' + id + ', args: ' + args);
         const handler = this.handlers.get(id);
         if (handler) {
+            console.log('handler found');
+            console.log('going to preocess arguments: ' + args.map(arg => this.argumentProcessors.reduce((r, p) => p.processArgument(r), arg)));
             return handler<T>(...args.map(arg => this.argumentProcessors.reduce((r, p) => p.processArgument(r), arg)));
         } else {
             throw new Error(`Command ${id} doesn't exist`);

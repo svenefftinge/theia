@@ -91,7 +91,9 @@ export class CommandRegistryImpl implements CommandRegistryExt {
 
     // tslint:disable-next-line:no-any
     $executeCommand<T>(id: string, ...args: any[]): PromiseLike<T | undefined> {
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>> $executeCommand');
         if (this.handlers.has(id)) {
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>> call executeLocalCommand from $');
             return this.executeLocalCommand(id, ...args);
         } else {
             return Promise.reject(new Error(`Command: ${id} does not exist.`));
@@ -100,13 +102,17 @@ export class CommandRegistryImpl implements CommandRegistryExt {
 
     // tslint:disable:no-any
     executeCommand<T>(id: string, ...args: any[]): PromiseLike<T | undefined> {
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>> executeCommand')
         if (this.handlers.has(id)) {
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>> 1');
             return this.executeLocalCommand(id, ...args);
         } else if (KnownCommands.mapped(id)) {
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>> 2');
             // Using the KnownCommand exclusions, convert the commands manually
             return KnownCommands.map(id, args, (mappedId: string, mappedArgs: any[] | undefined) =>
                 this.proxy.$executeCommand(mappedId, ...mappedArgs));
         } else {
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>> 3');
             return this.proxy.$executeCommand(id, ...args);
         }
     }
@@ -118,12 +124,13 @@ export class CommandRegistryImpl implements CommandRegistryExt {
 
     // tslint:disable-next-line:no-any
     private async executeLocalCommand<T>(id: string, ...args: any[]): Promise<T | undefined> {
-        console.log('executeLocalCommand id: ' + id + ', args: ' + args);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>> executeLocalCommand id: ' + id + ', args: ' + JSON.stringify(args));
         const handler = this.handlers.get(id);
         if (handler) {
-            console.log('handler found');
-            console.log('going to preocess arguments: ' + args.map(arg => this.argumentProcessors.reduce((r, p) => p.processArgument(r), arg)));
-            return handler<T>(...args.map(arg => this.argumentProcessors.reduce((r, p) => p.processArgument(r), arg)));
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>> handler found');
+            const processedArgs = args.map(arg => this.argumentProcessors.reduce((r, p) => p.processArgument(r), arg));
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>> going to process arguments: ' + JSON.stringify(processedArgs));
+            return handler<T>(...processedArgs);
         } else {
             throw new Error(`Command ${id} doesn't exist`);
         }

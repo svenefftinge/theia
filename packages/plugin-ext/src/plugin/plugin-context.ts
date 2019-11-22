@@ -182,6 +182,7 @@ export function createAPIFactory(
             },
             // tslint:disable-next-line:no-any
             executeCommand<T>(commandId: string, ...args: any[]): PromiseLike<T | undefined> {
+                console.log('+++++++++++++++++++++++++ execute command id: ' + commandId + ', args: ' + JSON.stringify(args));
                 return commandRegistry.executeCommand<T>(commandId, ...args);
             },
             registerTextEditorCommand(command: string, handler: (textEditor: theia.TextEditor, edit: theia.TextEditorEdit, ...arg: any[]) => void, thisArg?: any): Disposable {

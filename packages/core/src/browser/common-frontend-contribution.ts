@@ -507,6 +507,9 @@ export class CommonFrontendContribution implements FrontendApplicationContributi
         commandRegistry.registerCommand(CommonCommands.OPEN_VIEW, {
             execute: () => this.quickOpen.open(this.quickView.prefix)
         });
+        commandRegistry.registerCommand({ id: 'workbench.action.quickOpen' }, {
+            execute: () => this.quickOpen.open('')
+        });
     }
 
     private findTabBar(event?: Event): TabBar<Widget> | undefined {

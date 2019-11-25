@@ -621,7 +621,7 @@ export class KeybindingRegistry {
         this.keySequence.push(keyCode);
         const bindings = this.getKeybindingsForKeySequence(this.keySequence);
 
-        if (this.tryKeybindingExecution(bindings.full, event)) {
+        if (bindings.partial.length === 0 && this.tryKeybindingExecution(bindings.full, event)) {
 
             this.keySequence = [];
             this.statusBar.removeElement('keybinding-status');

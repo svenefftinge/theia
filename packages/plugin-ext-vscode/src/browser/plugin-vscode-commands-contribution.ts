@@ -175,6 +175,15 @@ export class PluginVscodeCommandsContribution implements CommandContribution {
         commands.registerCommand({ id: 'actions.find' }, {
             execute: () => commands.executeCommand(CommonCommands.FIND.id)
         });
+        commands.registerCommand({ id: 'undo' }, {
+            execute: () => commands.executeCommand(CommonCommands.UNDO.id)
+        });
+        commands.registerCommand({ id: 'workbench.action.quickOpen' }, {
+            execute: () => commands.executeCommand(CommonCommands.UNDO.id)
+        });
+        commands.registerCommand({ id: 'workbench.action.closeAllEditors' }, {
+            execute: () => commands.executeCommand(CommonCommands.CLOSE_ALL_TABS.id)
+        });
         commands.registerCommand({ id: 'workbench.action.files.save', }, {
             execute: (uri?: monaco.Uri) => {
                 if (uri) {

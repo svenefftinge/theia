@@ -81,12 +81,7 @@ export class DialogsExtImpl {
         return new Promise((resolve, reject) => {
             this.proxy.$showUploadDialog(optionsMain).then(result => {
                 if (result) {
-                    const uris = [];
-                    for (let i = 0; i < result.length; i++) {
-                        const uri = Uri.parse(result[i]);
-                        uris.push(uri);
-                    }
-                    resolve(uris);
+                    resolve(result.map(uri => Uri.parse(uri)));
                 } else {
                     resolve(undefined);
                 }
